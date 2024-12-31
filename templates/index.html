@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Welcome Banner -->
+<div class="welcome-banner">
+    <div class="container">
+        <h1>Welcome to SereneInk</h1>
+        <p class="lead">Where words find tranquility</p>
+    </div>
+</div>
+
+<!-- Blog Posts Grid -->
+<div class="container">
+    <div class="row">
+        {% for post in posts %}
+        <div class="col-md-4">
+            <div class="blog-card">
+                {% if post.image %}
+                <img src="/static/{{ post.image }}" alt="{{ post.title }}" class="card-img-top">
+                {% else %}
+                <img src="{{ url_for('static', filename='img/default-post.jpg') }}" alt="Default" class="card-img-top">
+                {% endif %}
+                <div class="blog-card-content">
+                    <h3>{{ post.title }}</h3>
+                    <div class="meta text-muted mb-2">
+                        <small>
+                            <i class="fas fa-calendar-alt"></i> {{ post.date_posted.strftime('%Y-%m-%d') }}
+                            <i class="fas fa-user ms-2"></i> {{ post.author.username }}
+                            {% if post.category %}
+                            <i class="fas fa-folder ms-2"></i> {{ post.category.name }}
+                            {% endif %}
+                        </small>
+                    </div>
+                    <p class="card-text">{{ post.summary }}</p>
+                    <a href="{{ url_for('post', post_id=post.id) }}" class="btn btn-primary">阅读更多</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if pagination %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% for page in pagination.iter_pages() %}
+                {% if page %}
+                    <li class="page-item {% if page == pagination.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('index', page=page) }}">{{ page }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

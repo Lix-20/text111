@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- 用户信息卡片 -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    {% if user.avatar %}
+                        <img src="{{ url_for('static', filename='uploads/' + user.avatar) }}" 
+                             class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;"
+                             alt="{{ user.username }}'s avatar">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='img/default-avatar.png') }}"
+                             class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;"
+                             alt="Default avatar">
+                    {% endif %}
+                    <h3>{{ user.username }}</h3>
+                    {% if user.bio %}
+                        <p class="text-muted">{{ user.bio }}</p>
+                    {% endif %}
+                    
+                    <!-- 社交统计 -->
+                    <div class="d-flex justify-content-around mb-3">
+                        <div class="text-center">
+                            <h5 class="mb-0">{{ user.followers.count() }}</h5>
+                            <small class="text-muted">关注者</small>
+                        </div>
+                        <div class="text-center">
+                            <h5 class="mb-0">{{ user.followed.count() }}</h5>
+                            <small class="text-muted">正在关注</small>
+                        </div>
+                        <div class="text-center">
+                            <h5 class="mb-0">{{ user.posts|length }}</h5>
+                            <small class="text-muted">文章</small>
+                        </div>
+                    </div>
+
+                    <!-- 社交按钮 -->
+                    {% if current_user.is_authenticated and current_user != user %}
+                        <div class="d-grid gap-2">
+                            {% if not current_user.is_following(user) %}
+                                <a href="{{ url_for('follow', username=user.username) }}" 
+                                   class="btn btn-primary">
+                                    <i class="fas fa-user-plus"></i> 关注
+                                </a>
+                            {% else %}
+                                <a href="{{ url_for('unfollow', username=user.username) }}" 
+                                   class="btn btn-outline-primary">
+                                    <i class="fas fa-user-minus"></i> 取消关注
+                                </a>
+                            {% endif %}
+                            <a href="{{ url_for('send_message', recipient=user.username) }}" 
+                               class="btn btn-outline-primary">
+                                <i class="fas fa-envelope"></i> 发送消息
+                            </a>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="user-info mt-3">
+                        {% if user.location %}
+                            <p><i class="bi bi-geo-alt"></i> {{ user.location }}</p>
+                        {% endif %}
+                        {% if user.website %}
+                            <p><i class="bi bi-link-45deg"></i> <a href="{{ user.website }}" target="_blank">个人网站</a></p>
+                        {% endif %}
+                        <p><i class="bi bi-calendar3"></i> 加入于 {{ user.date_joined.strftime('%Y-%m-%d') }}</p>
+                    </div>
+                    {% if current_user == user %}
+                        <a href="{{ url_for('settings') }}" class="btn btn-outline-primary mt-3">
+                            <i class="bi bi-gear"></i> 编辑个人资料
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 用户文章列表 -->
+        <div class="col-md-8">
+            <h2>{{ user.username }} 的文章</h2>
+            {% if posts %}
+                {% for post in posts %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="{{ url_for('post', post_id=post.id) }}" class="text-decoration-none">
+                                    {{ post.title }}
+                                </a>
+                            </h5>
+                            <p class="card-text text-muted">
+                                <small>
+                                    发布于 {{ post.date_posted.strftime('%Y-%m-%d') }}
+                                    {% if post.category %}
+                                        · 分类: <a href="{{ url_for('category_posts', category_id=post.category.id) }}">{{ post.category.name }}</a>
+                                    {% endif %}
+                                </small>
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <a href="{{ url_for('post', post_id=post.id) }}" class="btn btn-sm btn-outline-primary">阅读更多</a>
+                                    {% if current_user == post.author %}
+                                        <a href="{{ url_for('edit_post', post_id=post.id) }}" class="btn btn-sm btn-outline-secondary">编辑</a>
+                                    {% endif %}
+                                </div>
+                                <small class="text-muted">
+                                    <i class="bi bi-chat-dots"></i> {{ post.comments|length }}
+                                    <i class="bi bi-heart ms-2"></i> {{ post.like_count() }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>暂无文章</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

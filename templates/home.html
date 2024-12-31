@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- 主要内容区 -->
+        <div class="col-md-8">
+            {% if category %}
+                <h2 class="mb-4">{{ category.name }}</h2>
+            {% endif %}
+
+            <div class="posts-container">
+                {% if posts.items %}
+                    {% for post in posts.items %}
+                        <div class="card mb-4 post-card fade-in">
+                            <div class="card-body">
+                                <h2 class="card-title">
+                                    <a href="{{ url_for('post', post_id=post.id) }}" class="text-decoration-none text-dark">
+                                        {{ post.title }}
+                                    </a>
+                                </h2>
+                                <div class="card-meta mb-3">
+                                    <span class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>
+                                        {{ post.date_posted.strftime('%Y-%m-%d') }}
+                                    </span>
+                                    {% if post.category %}
+                                        <span class="ms-3 text-muted">
+                                            <i class="fas fa-folder me-1"></i>
+                                            <a href="{{ url_for('category_posts', category_id=post.category_id) }}" class="text-decoration-none text-muted">
+                                                {{ category.name if category else '未分类' }}
+                                            </a>
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <p class="card-text">{{ post.content[:200] }}...</p>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <a href="{{ url_for('post', post_id=post.id) }}" class="btn btn-primary">
+                                        阅读更多
+                                    </a>
+                                    <div class="post-stats">
+                                        <span class="me-3">
+                                            <i class="far fa-eye text-muted"></i>
+                                            <small class="text-muted">{{ post.views if post.views else 0 }}</small>
+                                        </span>
+                                        <span>
+                                            <i class="far fa-comment text-muted"></i>
+                                            <small class="text-muted">{{ post.comments|length }}</small>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>暂无文章
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 侧边栏 -->
+        <div class="col-md-4">
+            <!-- 热门文章 -->
+            {% if popular_posts %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-fire text-danger me-2"></i>热门文章
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for post in popular_posts %}
+                    <a href="{{ url_for('post', post_id=post.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span class="text-truncate me-3">{{ post.title }}</span>
+                        <small class="text-muted">
+                            <i class="far fa-eye"></i>
+                            {{ post.views if post.views else 0 }}
+                        </small>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- 最新评论 -->
+            {% if recent_comments %}
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-comments text-primary me-2"></i>最新评论
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for comment in recent_comments %}
+                    <a href="{{ url_for('post', post_id=comment.post_id) }}" class="list-group-item list-group-item-action">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small class="text-primary">{{ comment.author.username }}</small>
+                            <small class="text-muted">{{ comment.date_posted.strftime('%m-%d') }}</small>
+                        </div>
+                        <small class="text-muted d-block text-truncate">{{ comment.content }}</small>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/infinite-scroll.css') }}">
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/infinite-scroll.js') }}"></script>
+{% endblock %}

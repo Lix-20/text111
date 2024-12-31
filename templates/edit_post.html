@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>编辑文章</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="title" class="form-label">标题</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ post.title }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="category_id" class="form-label">分类</label>
+            <select class="form-select" id="category_id" name="category_id">
+                <option value="">选择分类...</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}" {% if post.category_id == category.id %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="tags" class="form-label">标签</label>
+            <input type="text" class="form-control" id="tags" name="tags" 
+                   value="{{ post.tags|map(attribute='name')|join(', ') }}"
+                   placeholder="输入标签，用逗号分隔">
+            <div class="form-text">多个标签请用逗号分隔，例如：Python, Flask, Web开发</div>
+        </div>
+        <div class="mb-3">
+            <label for="content" class="form-label">内容</label>
+            <textarea class="form-control" id="content" name="content" rows="10" required>{{ post.content }}</textarea>
+            <div class="form-text">支持 Markdown 格式</div>
+        </div>
+        <div class="mb-3">
+            <label for="image" class="form-label">特色图片</label>
+            {% if post.image %}
+                <div class="mb-2">
+                    <img src="{{ url_for('static', filename=post.image) }}" 
+                         alt="当前特色图片" class="img-fluid" style="max-height: 200px;">
+                </div>
+            {% endif %}
+            <input type="file" class="form-control" id="image" name="image" accept="image/*">
+            <div class="form-text">支持 JPG、PNG、GIF 格式，建议尺寸 1200x630 像素</div>
+        </div>
+        <div class="mb-3">
+            <a href="{{ url_for('post', post_id=post.id) }}" class="btn btn-secondary">取消</a>
+            <button type="submit" class="btn btn-primary">保存更改</button>
+            <button type="button" class="btn btn-danger float-end" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                删除文章
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- 删除确认对话框 -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">确认删除</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                确定要删除这篇文章吗？此操作不可撤销。
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <form action="{{ url_for('delete_post', post_id=post.id) }}" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-danger">确认删除</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 添加 Markdown 编辑器的 CSS 和 JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+<script>
+    const easyMDE = new EasyMDE({
+        element: document.getElementById('content'),
+        spellChecker: false,
+        status: false,
+        toolbar: [
+            'bold', 'italic', 'heading', '|',
+            'quote', 'code', 'unordered-list', 'ordered-list', '|',
+            'link', 'image', '|',
+            'preview', 'side-by-side', 'fullscreen'
+        ]
+    });
+</script>
+{% endblock %}

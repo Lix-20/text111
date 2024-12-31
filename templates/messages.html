@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}消息{% endblock %}
+{% block meta_title %}消息{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#inbox" role="tab">
+                                <i class="fas fa-inbox me-2"></i>收件箱
+                                {% set unread = messages_received|selectattr('read', 'equalto', false)|list|length %}
+                                {% if unread > 0 %}
+                                <span class="badge bg-primary">{{ unread }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#sent" role="tab">
+                                <i class="fas fa-paper-plane me-2"></i>发件箱
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body p-0">
+                    <div class="tab-content">
+                        <!-- 收件箱 -->
+                        <div class="tab-pane fade show active" id="inbox" role="tabpanel">
+                            {% if messages_received %}
+                                <div class="list-group list-group-flush">
+                                    {% for message in messages_received %}
+                                    <div class="list-group-item {% if not message.read %}bg-light{% endif %}">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">
+                                                    <a href="{{ url_for('profile', username=message.sender.username) }}" class="text-decoration-none">
+                                                        {{ message.sender.username }}
+                                                    </a>
+                                                    {% if not message.read %}
+                                                    <span class="badge bg-primary">新</span>
+                                                    {% endif %}
+                                                </h6>
+                                                <p class="mb-1">{{ message.content }}</p>
+                                                <small class="text-muted">
+                                                    {{ message.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                                                </small>
+                                            </div>
+                                            <div>
+                                                <a href="{{ url_for('send_message', recipient=message.sender.username) }}" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    回复
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">收件箱暂无消息</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- 发件箱 -->
+                        <div class="tab-pane fade" id="sent" role="tabpanel">
+                            {% if messages_sent %}
+                                <div class="list-group list-group-flush">
+                                    {% for message in messages_sent %}
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-1">
+                                                    发送给：
+                                                    <a href="{{ url_for('profile', username=message.recipient.username) }}" class="text-decoration-none">
+                                                        {{ message.recipient.username }}
+                                                    </a>
+                                                </h6>
+                                                <p class="mb-1">{{ message.content }}</p>
+                                                <small class="text-muted">
+                                                    {{ message.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                                                </small>
+                                            </div>
+                                            <div>
+                                                <a href="{{ url_for('send_message', recipient=message.recipient.username) }}" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    再次发送
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <i class="fas fa-paper-plane fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted">发件箱暂无消息</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

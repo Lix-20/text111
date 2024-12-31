@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}关于{% endblock %}
+{% block meta_title %}关于{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="about-section">
+                <div class="text-center mb-5">
+                    <i class="fas fa-user-circle fa-4x text-primary mb-3"></i>
+                    <h1 class="display-5 fw-bold">关于我的博客</h1>
+                    <p class="lead text-muted">分享技术，记录生活</p>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title h4 mb-3">
+                            <i class="fas fa-info-circle me-2 text-primary"></i>博客介绍
+                        </h2>
+                        <p>这是一个使用 Flask 构建的个人博客网站，主要用于：</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>分享技术文章和学习笔记</li>
+                            <li><i class="fas fa-check text-success me-2"></i>记录生活点滴和个人感悟</li>
+                            <li><i class="fas fa-check text-success me-2"></i>与志同道合的朋友交流讨论</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title h4 mb-3">
+                            <i class="fas fa-code me-2 text-primary"></i>技术栈
+                        </h2>
+                        <div class="row g-4">
+                            <div class="col-6 col-md-4">
+                                <div class="tech-item">
+                                    <i class="fab fa-python fa-2x mb-2 text-primary"></i>
+                                    <h5>Python</h5>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="tech-item">
+                                    <i class="fab fa-flask fa-2x mb-2 text-success"></i>
+                                    <h5>Flask</h5>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="tech-item">
+                                    <i class="fab fa-bootstrap fa-2x mb-2 text-purple"></i>
+                                    <h5>Bootstrap</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title h4 mb-3">
+                            <i class="fas fa-envelope me-2 text-primary"></i>联系方式
+                        </h2>
+                        <p>如果你对我的博客内容有任何问题或建议，欢迎通过以下方式联系我：</p>
+                        <div class="d-flex flex-column gap-2">
+                            <a href="https://github.com/利克斯-20" target="_blank" 
+                               class="contact-link">
+                                <i class="fab fa-github me-2"></i>GitHub
+                            </a>
+                            <a href="mailto:your.email@example.com" class="contact-link">
+                                <i class="fas fa-envelope me-2"></i>Email
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.about-section {
+    margin-bottom: 3rem;
+}
+
+.tech-item {
+    text-align: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    transition: transform 0.2s;
+}
+
+.tech-item:hover {
+    transform: translateY(-2px);
+}
+
+.tech-item h5 {
+    margin: 0;
+    font-size: 1rem;
+    color: #495057;
+}
+
+.contact-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    color: #495057;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.contact-link:hover {
+    background: #e9ecef;
+    color: #212529;
+    transform: translateX(5px);
+}
+
+.text-purple {
+    color: #7952b3;
+}
+</style>
+{% endblock %}

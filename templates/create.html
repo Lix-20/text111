@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}写文章{% endblock %}
+{% block meta_title %}写文章{% endblock %}
+
+{% block content %}
+<div class="container-fluid write-container">
+    <form method="POST" class="write-form">
+        <div class="write-header">
+            <input type="text" class="title-input" id="title" name="title" 
+                   placeholder="输入文章标题..." required>
+            <select class="category-select" id="category" name="category">
+                <option value="">选择分类...</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+            <div class="write-actions">
+                <a href="{{ url_for('home') }}" class="btn btn-light">取消</a>
+                <button type="submit" class="btn btn-primary">发布</button>
+            </div>
+        </div>
+        
+        <div class="editor-container">
+            <textarea id="content" name="content" required></textarea>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/easymde/2.18.0/easymde.min.css">
+<script src="https://cdn.bootcdn.net/ajax/libs/easymde/2.18.0/easymde.min.js"></script>
+<script>
+    const easyMDE = new EasyMDE({
+        element: document.getElementById('content'),
+        spellChecker: false,
+        status: false,
+        placeholder: '开始写作...',
+        toolbar: ['bold', 'italic', 'heading', '|', 
+                 'quote', 'unordered-list', 'ordered-list', '|',
+                 'link', 'image', '|', 'preview'],
+        autofocus: true,
+        maxHeight: '800px',
+        minHeight: '500px'
+    });
+    
+    // 设置编辑器容器高度
+    document.querySelector('.editor-container').style.height = 
+        (window.innerHeight - document.querySelector('.write-header').offsetHeight - 56) + 'px';
+</script>
+{% endblock %}

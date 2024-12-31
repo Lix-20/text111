@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="fas fa-cog me-2"></i>个人设置</h4>
+                </div>
+                <div class="card-body">
+                    <!-- 头像预览和上传 -->
+                    <div class="text-center mb-4">
+                        <div class="avatar-preview mb-3">
+                            {% if current_user.avatar %}
+                                <img src="{{ url_for('static', filename='uploads/' + current_user.avatar) }}" 
+                                     class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;"
+                                     alt="当前头像">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='img/default-avatar.png') }}"
+                                     class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;"
+                                     alt="默认头像">
+                            {% endif %}
+                        </div>
+                        <form action="{{ url_for('upload_avatar') }}" method="post" enctype="multipart/form-data" class="mb-4">
+                            <div class="mb-3">
+                                <label for="avatar" class="form-label">更换头像</label>
+                                <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*" required>
+                                <div class="form-text">支持 JPG、PNG 格式，建议尺寸 300x300 像素</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-upload me-1"></i>上传头像
+                            </button>
+                        </form>
+                    </div>
+
+                    <hr>
+
+                    <!-- 个人信息设置 -->
+                    <form method="post" action="{{ url_for('settings') }}">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">用户名</label>
+                            <input type="text" class="form-control" id="username" name="username" 
+                                   value="{{ current_user.username }}" required>
+                            <div class="form-text">用户名将显示在你的个人主页和评论中</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">邮箱</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="{{ current_user.email }}" required>
+                            <div class="form-text">用于接收通知和找回密码</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bio" class="form-label">个人简介</label>
+                            <textarea class="form-control" id="bio" name="bio" rows="3">{{ current_user.bio }}</textarea>
+                            <div class="form-text">简单介绍一下你自己</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="location" class="form-label">所在地</label>
+                            <input type="text" class="form-control" id="location" name="location" 
+                                   value="{{ current_user.location }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="website" class="form-label">个人网站</label>
+                            <input type="url" class="form-control" id="website" name="website" 
+                                   value="{{ current_user.website }}">
+                        </div>
+
+                        <hr>
+
+                        <!-- 密码修改 -->
+                        <h5 class="mb-3">修改密码</h5>
+                        <div class="mb-3">
+                            <label for="current_password" class="form-label">当前密码</label>
+                            <input type="password" class="form-control" id="current_password" name="current_password">
+                            <div class="form-text">如果不修改密码，请留空</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_password" class="form-label">新密码</label>
+                            <input type="password" class="form-control" id="new_password" name="new_password"
+                                   minlength="6">
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirm_password" class="form-label">确认新密码</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password"
+                                   minlength="6">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>保存设置
+                        </button>
+                    </form>
+
+                    <hr>
+
+                    <!-- 账号管理 -->
+                    <h5 class="mb-3 text-danger">危险区域</h5>
+                    <div class="alert alert-warning">
+                        <h6 class="alert-heading">注销账号</h6>
+                        <p class="mb-0">注销账号后，你的所有数据将被永久删除且无法恢复。</p>
+                    </div>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                        <i class="fas fa-user-times me-1"></i>注销账号
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 注销账号确认对话框 -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteAccountModalLabel">确认注销账号</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-danger">警告：此操作不可逆！</p>
+                <p>注销账号将：</p>
+                <ul>
+                    <li>永久删除你的个人信息</li>
+                    <li>删除你发布的所有文章</li>
+                    <li>删除你的所有评论</li>
+                    <li>解除所有关注关系</li>
+                </ul>
+                <div class="mb-3">
+                    <label for="delete_confirm" class="form-label">请输入你的密码以确认：</label>
+                    <input type="password" class="form-control" id="delete_confirm" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-danger" onclick="deleteAccount()">
+                    <i class="fas fa-exclamation-triangle me-1"></i>确认注销
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function deleteAccount() {
+    const password = document.getElementById('delete_confirm').value;
+    if (!password) {
+        alert('请输入密码以确认');
+        return;
+    }
+    
+    if (!confirm('最后确认：你确定要注销账号吗？此操作不可恢复！')) {
+        return;
+    }
+    
+    fetch('/delete_account', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({password: password})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '/';
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('操作失败，请稍后重试');
+    });
+}
+
+// 密码验证
+document.getElementById('new_password').addEventListener('input', validatePassword);
+document.getElementById('confirm_password').addEventListener('input', validatePassword);
+
+function validatePassword() {
+    const newPassword = document.getElementById('new_password');
+    const confirmPassword = document.getElementById('confirm_password');
+    
+    if (confirmPassword.value && newPassword.value !== confirmPassword.value) {
+        confirmPassword.setCustomValidity('密码不匹配');
+    } else {
+        confirmPassword.setCustomValidity('');
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-pen"></i> 发布文章
+                    </h1>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="createPostForm" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">标题</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="category" class="form-label">分类</label>
+                            <select class="form-select" id="category" name="category">
+                                <option value="">选择分类</option>
+                                {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="image" class="form-label">封面图片</label>
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                            <div class="form-text">支持 PNG、JPG、JPEG、GIF 格式的图片</div>
+                            <div id="imagePreview" class="mt-2" style="display: none;">
+                                <img src="" alt="预览图" style="max-width: 300px; max-height: 200px;" class="img-thumbnail">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="content" class="form-label">内容</label>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> 支持 Markdown 格式
+                            </div>
+                            <textarea class="form-control" id="content" name="content" rows="15" required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-text">
+                                <i class="fas fa-lightbulb"></i> 提示：
+                                <ul>
+                                    <li>使用 # 到 ###### 创建标题</li>
+                                    <li>使用 **文本** 或 __文本__ 加粗</li>
+                                    <li>使用 *文本* 或 _文本_ 斜体</li>
+                                    <li>使用 ```代码``` 插入代码块</li>
+                                    <li>使用 > 引用文本</li>
+                                    <li>使用 - 或 * 创建无序列表</li>
+                                    <li>使用 1. 2. 3. 创建有序列表</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+                                <i class="fas fa-arrow-left"></i> 返回
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> 发布文章
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 图片预览功能
+document.getElementById('image').addEventListener('change', function(e) {
+    const preview = document.getElementById('imagePreview');
+    const img = preview.querySelector('img');
+    const file = e.target.files[0];
+
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            img.src = e.target.result;
+            preview.style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+    } else {
+        preview.style.display = 'none';
+    }
+});
+</script>
+
+{% endblock %}
