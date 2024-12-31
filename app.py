@@ -10,6 +10,7 @@ import time
 import re
 from sqlalchemy import extract, func, desc
 from bs4 import BeautifulSoup  # Import BeautifulSoup
+from pathlib import Path
 
 app = Flask(__name__)
 # 设置字符编码
@@ -17,10 +18,15 @@ app.config['JSON_AS_ASCII'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'your-secret-key'  # 添加密钥用于session
-app.config['UPLOAD_FOLDER'] = '/tmp/uploads'  # Vercel的临时目录
+
+# Vercel环境配置
+if os.environ.get('VERCEL_ENV') == 'production':
+    app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
+else:
+    app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'static', 'uploads')
 
 # 确保上传目录存在
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+Path(app.config['UPLOAD_FOLDER']).mkdir(parents=True, exist_ok=True)
 
 db = SQLAlchemy(app)
 
