@@ -16,7 +16,7 @@ from urllib.parse import urlparse
 app = Flask(__name__)
 app.config.update(
     JSON_AS_ASCII=False,
-    SQLALCHEMY_DATABASE_URI='sqlite:///app.db',
+    SQLALCHEMY_DATABASE_URI='sqlite:///:memory:',
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
     SECRET_KEY='your-secret-key',
     UPLOAD_FOLDER='/tmp/uploads'
@@ -30,29 +30,25 @@ db = SQLAlchemy(app)
 # 在创建所有模型类之后，确保数据库表结构是最新的
 def init_db():
     with app.app_context():
-        # 创建所有表（如果不存在）
         db.create_all()
-        
-        # 创建默认分类（如果不存在）
-        if not Category.query.first():
-            categories = [
-                Category(name='日记', description='记录生活点滴和心情感悟'),
-                Category(name='学习', description='学习笔记和知识总结'),
-                Category(name='旅行', description='旅行见闻和精彩瞬间')
-            ]
-            db.session.add_all(categories)
-            db.session.commit()
+        # 添加一些初始数据
+        if not User.query.first():
+            admin = User(username='admin', email='admin@example.com')
+            admin.set_password('admin123')
+            db.session.add(admin)
             
-        # 创建默认标签（如果不存在）
-        if not Tag.query.first():
-            tags = [
-                Tag(name='Python'),
-                Tag(name='Flask'),
-                Tag(name='Web开发'),
-                Tag(name='数据库'),
-                Tag(name='前端')
-            ]
-            db.session.add_all(tags)
+            category = Category(name='示例分类', description='这是一个示例分类')
+            db.session.add(category)
+            
+            post = Post(
+                title='欢迎使用',
+                content='这是一个示例文章，欢迎使用我们的博客系统！',
+                summary='欢迎使用我们的博客系统',
+                user_id=1,
+                category_id=1
+            )
+            db.session.add(post)
+            
             db.session.commit()
 
 login_manager = LoginManager()
