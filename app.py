@@ -16,9 +16,9 @@ from urllib.parse import urlparse
 app = Flask(__name__)
 app.config.update(
     JSON_AS_ASCII=False,
-    SQLALCHEMY_DATABASE_URI=get_database_url(),
+    SQLALCHEMY_DATABASE_URI='sqlite:///app.db',
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
-    SECRET_KEY=os.getenv('SECRET_KEY', 'your-secret-key'),
+    SECRET_KEY='your-secret-key',
     UPLOAD_FOLDER='/tmp/uploads'
 )
 
