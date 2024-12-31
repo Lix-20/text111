@@ -18,15 +18,10 @@ app.config['JSON_AS_ASCII'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'your-secret-key'  # 添加密钥用于session
-
-# Vercel环境配置
-if os.environ.get('VERCEL_ENV') == 'production':
-    app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
-else:
-    app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'static', 'uploads')
+app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
 
 # 确保上传目录存在
-Path(app.config['UPLOAD_FOLDER']).mkdir(parents=True, exist_ok=True)
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 db = SQLAlchemy(app)
 
