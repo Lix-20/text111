@@ -11,13 +11,14 @@ import re
 from sqlalchemy import extract, func, desc
 from bs4 import BeautifulSoup  # Import BeautifulSoup
 from pathlib import Path
+from urllib.parse import urlparse
 
 app = Flask(__name__)
 app.config.update(
     JSON_AS_ASCII=False,
-    SQLALCHEMY_DATABASE_URI='sqlite:///:memory:',
+    SQLALCHEMY_DATABASE_URI=get_database_url(),
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
-    SECRET_KEY='your-secret-key',
+    SECRET_KEY=os.getenv('SECRET_KEY', 'your-secret-key'),
     UPLOAD_FOLDER='/tmp/uploads'
 )
 
@@ -912,6 +913,12 @@ def delete_account():
         db.session.rollback()
         app.logger.error(f'Account deletion error: {str(e)}')
         return jsonify({'success': False, 'message': '删除失败，请稍后重试'})
+
+def get_database_url():
+    database_url = os.getenv('DATABASE_URL', 'sqlite:///./db.sqlite3')
+    if database_url.startswith('postgres://'):
+        database_url = database_url.replace('postgres://', 'postgresql://', 1)
+    return database_url
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
