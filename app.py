@@ -13,12 +13,13 @@ from bs4 import BeautifulSoup  # Import BeautifulSoup
 from pathlib import Path
 
 app = Flask(__name__)
-# 设置字符编码
-app.config['JSON_AS_ASCII'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'your-secret-key'  # 添加密钥用于session
-app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
+app.config.update(
+    JSON_AS_ASCII=False,
+    SQLALCHEMY_DATABASE_URI='sqlite:///:memory:',
+    SQLALCHEMY_TRACK_MODIFICATIONS=False,
+    SECRET_KEY='your-secret-key',
+    UPLOAD_FOLDER='/tmp/uploads'
+)
 
 # 确保上传目录存在
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
