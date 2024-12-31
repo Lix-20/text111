@@ -14,10 +14,10 @@ from bs4 import BeautifulSoup  # Import BeautifulSoup
 app = Flask(__name__)
 # 设置字符编码
 app.config['JSON_AS_ASCII'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(os.getcwd(), 'blog.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'your-secret-key'  # 添加密钥用于session
-app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'static', 'uploads')
+app.config['UPLOAD_FOLDER'] = '/tmp/uploads'  # Vercel的临时目录
 
 # 确保上传目录存在
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
